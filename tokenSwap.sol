@@ -31,7 +31,7 @@ contract TokenSwap{
         uint amount;
     }
     //keeping track of all swapping transactions done.
-    mapping(address=>swapTransaction)allSwapTransactions;
+    mapping(address=>swapTransaction[]) public allSwapTransactions;
     
     //amount a person holds of a particular token 
     mapping(address => mapping(address=>uint)) amountPerToken;
@@ -79,7 +79,14 @@ contract TokenSwap{
 
         subtractTokens(address(this),to,amount);
         addTokens(msg.sender,to,amount);
-        emit swapTransactionDone(msg.sender,from, to,amount);
+
+        swapTransaction memory swapT;
+        swapT.user = msg.sender;
+        swapT.fromToken = from;
+        swapT.toToken = to;
+        swapT.amount = amount;
+        allSwapTransactions[msg.sender].push(swapT);
+        emit swapTransactionDone(swapT.user,swapT.fromToken, swapT.toToken,swapT.amount);
     }
 
     
